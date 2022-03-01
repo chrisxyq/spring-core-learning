@@ -1,5 +1,7 @@
 package com.example.multidatasourcedemo;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -7,16 +9,25 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
+import java.util.Arrays;
 
-@SpringBootApplication(exclude = { DataSourceAutoConfiguration.class,
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class,
         DataSourceTransactionManagerAutoConfiguration.class,
         JdbcTemplateAutoConfiguration.class})
 @Slf4j
 public class MultiDataSourceDemoApplication {
+    /**
+     * springboot获取上下文
+     */
+    @Autowired
+    private ApplicationContext applicationContext;
 
     public static void main(String[] args) {
         SpringApplication.run(MultiDataSourceDemoApplication.class, args);
@@ -51,6 +62,8 @@ public class MultiDataSourceDemoApplication {
     public DataSource barDataSource() {
         DataSourceProperties dataSourceProperties = barDataSourceProperties();
         log.info("bar datasource: {}", dataSourceProperties.getUrl());
+        //springboot打印beans
+        log.info("BeanDefinitionNames: {}", Arrays.toString(applicationContext.getBeanDefinitionNames()));
         return dataSourceProperties.initializeDataSourceBuilder().build();
     }
 
